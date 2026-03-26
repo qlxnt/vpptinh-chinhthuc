@@ -2,55 +2,87 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-type CartItem = {
-  id: number;
-  name: string;
-  image: string;
-  quantity: number;
-};
-
-const QuoteContext = createContext<any>(null);
+const QuoteContext = createContext<any>(undefined);
 
 export function QuoteProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [quoteItems, setQuoteItems] = useState<any[]>([]);
 
-  const addToQuote = (product: { id: number; name: string; image: string }) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === product.id);
+  // 1. Thêm sản phẩm (Nếu có rồi thì cộng thêm 1)
+  const addToQuote = (product: any) => {
+    setQuoteItems((prev) => {
+      const existingItem = prev.find((item) => item.id === product.id);
+      
       if (existingItem) {
-        return prevCart.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        // Đã có trong giỏ -> Tăng số lượng (quantity) lên 1
+        return prev.map((item) =>
+          item.id === product.id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
         );
       }
-      return [...prevCart, { ...product, quantity: 1 }];
+      
+      // Chưa có trong giỏ -> Thêm mới với số lượng mặc định là 1
+      return [...prev, { ...product, quantity: 1 }];
     });
   };
 
-  const decreaseQuantity = (id: number) => {
-    setCart((prevCart) => 
-      prevCart.map((item) => 
-        item.id === id ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item
+  // 2. Xóa hẳn sản phẩm (Nút X đỏ)
+  const removeFromQuote = (id: string) => {
+    setQuoteItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  // 3. Tăng số lượng 1 đơn vị (Nút +)
+  const increaseQuantity = (id: string) => {
+    setQuoteItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
       )
     );
   };
 
-  const removeFromQuote = (id: number) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  // 4. Giảm số lượng 1 đơn vị (Nút -)
+  const decreaseQuantity = (id: string) => {
+    setQuoteItems((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          // Nếu số lượng đang là 1 mà bấm trừ, ta tự động xóa luôn sản phẩm đó
+          if (item.quantity <= 1) return null; 
+          return { ...item, quantity: item.quantity - 1 };
+        }
+        return item;
+      }).filter(Boolean) // Lọc bỏ những sản phẩm bị trả về null ở trên
+    );
   };
 
-  // HÀM MỚI: Dọn sạch giỏ hàng sau khi gửi thành công
-  const clearQuote = () => {
-    setCart([]);
+  // 5. Cập nhật số lượng trực tiếp (Khi khách tự gõ số vào ô)
+  const updateQuantity = (id: string, newQuantity: number) => {
+    if (newQuantity < 1) return; // Không cho nhập số âm hoặc số 0
+    setQuoteItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
+    );
   };
 
   return (
-    // Nhớ truyền thêm clearQuote ra ngoài
-    <QuoteContext.Provider value={{ cart, addToQuote, decreaseQuantity, removeFromQuote, clearQuote }}>
+    <QuoteContext.Provider 
+      value={{ 
+        quoteItems, 
+        addToQuote, 
+        removeFromQuote, 
+        increaseQuantity, 
+        decreaseQuantity, 
+        updateQuantity 
+      }}
+    >
       {children}
     </QuoteContext.Provider>
   );
 }
 
 export function useQuote() {
-  return useContext(QuoteContext);
+  return useContext(QuoteContext) || { 
+    quoteItems: [], 
+    addToQuote: () => {}, 
+    removeFromQuote: () => {},
+    increaseQuantity: () => {},
+    decreaseQuantity: () => {},
+    updateQuantity: () => {}
+  };
 }

@@ -1,15 +1,25 @@
-import Link from 'next/link';
-
 export default function Header() {
   return (
-    <header className="border-b bg-white shadow-sm sticky top-0 z-50">
-      {/* Tăng py-4 lên py-10 (padding trên/dưới) để nhân đôi chiều cao */}
-      <div className="container mx-auto px-4 py-10 flex items-center">
+    <header className="w-full">
+      {/* Dải thông báo: Chữ được đổi sang màu nâu đậm hơn */}
+      <div className="bg-[#f4ebe6] w-full py-2.5 px-4 text-center border-b border-[#e8d5cb]">
+        <p className="text-[#5D4037] text-sm font-bold tracking-wide">
+          Kính chào quý khách đến với Văn Phòng Phẩm Tịnh - Cửa hàng Oanh 177! Chuyên cung cấp sỉ & lẻ văn phòng phẩm. Vui lòng thêm sản phẩm vào danh sách để nhận báo giá chiết khấu cao nhất! 💥
+        </p>
+      </div>
+      
+      {/* Khu vực Tên cửa hàng & Slogan (Được căn giữa) */}
+      <div className="bg-white w-full py-6 px-8 border-b border-[#e8d5cb] shadow-sm flex flex-col items-center justify-center">
         
-        {/* Logo / Tên thương hiệu: Tăng nhẹ kích cỡ lên text-4xl cho cân xứng với Header mới */}
-        <Link href="/" className="text-4xl font-serif font-bold text-red-600 tracking-wide block">
+        {/* Tên cửa hàng: Đổi font Serif, màu nâu đậm, căn giữa, size chữ to hơn một chút */}
+        <h1 className="text-4xl font-serif font-extrabold text-[#5D4037] tracking-widest uppercase drop-shadow-sm mb-1.5">
           Cửa hàng Oanh 177
-        </Link>
+        </h1>
+        
+        {/* Slogan: Chữ in nghiêng, màu nâu nhạt hơn để tạo điểm nhấn phụ */}
+        <p className="text-[15px] text-[#8d6e63] font-medium italic tracking-wide">
+          "Đặt hàng nhanh tay, nhận ngay ưu đãi"
+        </p>
         
       </div>
     </header>

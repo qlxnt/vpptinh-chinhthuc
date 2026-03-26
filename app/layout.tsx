@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer"; // 1. Gọi Footer vào đây
 import { QuoteProvider } from "@/context/QuoteContext";
 
-const inter = Inter({ subsets: ["latin"] });
+// Khai báo Header và Footer vừa tạo
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Văn Phòng Phẩm Tịnh - Cửa hàng Oanh 177",
-  description: "Cung cấp văn phòng phẩm giá sỉ",
+  description: "Chuyên cung cấp sỉ lẻ văn phòng phẩm",
 };
 
 export default function RootLayout({
@@ -19,15 +18,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body className={inter.className}>
+      <body className="bg-[#fcf9f8] min-h-screen flex flex-col">
         <QuoteProvider>
-          <div className="flex flex-col min-h-screen"> {/* Thêm flex để ép Footer xuống đáy */}
-            <Header />
-            <main className="flex-1 bg-gray-50">
-              {children}
-            </main>
-            <Footer /> {/* 2. Đặt Footer ở dưới main */}
-          </div>
+          {/* 1. HIỆN HEADER Ở TRÊN CÙNG */}
+          <Header />
+          
+          {/* 2. HIỆN NỘI DUNG 3 CỘT Ở GIỮA (Tự động kéo giãn để đẩy Footer xuống đáy) */}
+          <main className="flex-1 w-full max-w-[1400px] mx-auto p-4 md:p-6">
+            {children}
+          </main>
+          
+          {/* 3. HIỆN FOOTER Ở DƯỚI CÙNG */}
+          <Footer />
         </QuoteProvider>
       </body>
     </html>
